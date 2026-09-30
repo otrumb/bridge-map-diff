@@ -1,0 +1,26 @@
+# Provenance
+
+Evidence captured 2026-09-30 through unauthenticated GitHub API calls and temporary exact-SHA Git fetches. Manifest stores normalized facts only, not copied upstream files. “Mapping” means repository-declared relationship or identity, never canonical asset truth.
+
+| Case | Immutable comparison | Source and rationale | License evidence |
+|---|---|---|---|
+| `uniswap-monad-additions` | `115ffe99793f1682d2759bd152bfb9996231b9bd..3b9e97f0644126e7ea1b22a6eecaa22214a81015` | [`src/local_mappings/monad.json`](https://github.com/Uniswap/token-list-bridge-utils/blob/3b9e97f0644126e7ea1b22a6eecaa22214a81015/src/local_mappings/monad.json), [PR #147](https://github.com/Uniswap/token-list-bridge-utils/pull/147) | `LICENSE` contains GPL-3.0; `package.json` says `GPL-3.0-or-later`. |
+| `optimism-cbeth-base-goerli-addition` | `320c59569da93a34207b46e646ce7bb3bc78479c..27ab9b2d3388f7feba3a152e0a0748c73d732a68` | [`data/cbETH/data.json`](https://github.com/ethereum-optimism/ethereum-optimism.github.io/blob/27ab9b2d3388f7feba3a152e0a0748c73d732a68/data/cbETH/data.json), [PR #296](https://github.com/ethereum-optimism/ethereum-optimism.github.io/pull/296) | `package.json` says `MIT`. |
+| `wormhole-token-list-elon-retarget` | `e417e90e2a2eb88ab2bfc8f94ad3a9adcb26b7ad..199d4517cfd352b16ed4b8eb985d9500596073d2` | [`src/config/token_data.py`](https://github.com/wormhole-foundation/wormhole-token-list/blob/199d4517cfd352b16ed4b8eb985d9500596073d2/src/config/token_data.py), [`src/utils/solana_wormhole_tokens.json`](https://github.com/wormhole-foundation/wormhole-token-list/blob/199d4517cfd352b16ed4b8eb985d9500596073d2/src/utils/solana_wormhole_tokens.json), [PR #258](https://github.com/wormhole-foundation/wormhole-token-list/pull/258) | `package.json` says `Apache-2.0`. |
+| `uniswap-unichain-lsk-removal` | `a2826abee59be83ff3168785c6ff267a581d6a0d..58f853e883aef645d54fbaec7524e454cd0d7399` | [`src/local_mappings/unichain.json`](https://github.com/Uniswap/token-list-bridge-utils/blob/58f853e883aef645d54fbaec7524e454cd0d7399/src/local_mappings/unichain.json), [PR #148](https://github.com/Uniswap/token-list-bridge-utils/pull/148) | Same GPL evidence above. |
+| `uniswap-excluded-token-conflict` | `5ac5a6f6233efa7ced72c6e7a52e32cfd8bad4db..b60bf4c83043b2fc774a18867c07f871b82126b8` | [`src/constants/excludedTokens.ts`](https://github.com/Uniswap/token-list-bridge-utils/blob/b60bf4c83043b2fc774a18867c07f871b82126b8/src/constants/excludedTokens.ts), [`src/providers/index.ts`](https://github.com/Uniswap/token-list-bridge-utils/blob/b60bf4c83043b2fc774a18867c07f871b82126b8/src/providers/index.ts), [PR #143](https://github.com/Uniswap/token-list-bridge-utils/pull/143) | Same GPL evidence above. |
+| `megaeth-canonical-case-normalization` | `ffca9da45ebfec28eebc8ad743936c0608392cb7..85deb2fe010ba84ae53037310398e70e437acdc4` | [`src/generate.ts`](https://github.com/Nexory/mega-tokenlist/blob/85deb2fe010ba84ae53037310398e70e437acdc4/src/generate.ts), [upstream PR #51](https://github.com/megaeth-labs/mega-tokenlist/pull/51), [issue #52](https://github.com/megaeth-labs/mega-tokenlist/issues/52). PR head repo and full SHA establish source provenance; case remains medium confidence because PR closed unmerged. | Head commit `package.json` says `MIT`. |
+| `wormhole-prime-layout-move` | `e5947bb1bee40e573a022ef37a92e59fec1b1422..6437ab6f5ef5a3537835e3a547ae15ac2f529f03` | [`node/pkg/governor/generated_mainnet_tokens.go`](https://github.com/wormhole-foundation/wormhole/blob/6437ab6f5ef5a3537835e3a547ae15ac2f529f03/node/pkg/governor/generated_mainnet_tokens.go), [`node/pkg/governor/manual_tokens.go`](https://github.com/wormhole-foundation/wormhole/blob/6437ab6f5ef5a3537835e3a547ae15ac2f529f03/node/pkg/governor/manual_tokens.go), [PR #4679](https://github.com/wormhole-foundation/wormhole/pull/4679) | Root `LICENSE` is Apache-2.0. |
+| `wormhole-layerzero-usdc-price-only` | `5a9dc715097aac402baa6e2f3472744144ed4c95..7b978b106fc804bfdc26c3f9588a3a54c0f284c7` | [`node/pkg/governor/generated_mainnet_tokens.go`](https://github.com/wormhole-foundation/wormhole/blob/7b978b106fc804bfdc26c3f9588a3a54c0f284c7/node/pkg/governor/generated_mainnet_tokens.go), [PR #4605](https://github.com/wormhole-foundation/wormhole/pull/4605) | Root `LICENSE` is Apache-2.0. |
+
+## Gate Accounting
+
+- License-safe: 8 of 8. GPL cases include facts only; no upstream source copied.
+- Additions/migrations: 3 (`uniswap-monad-additions`, `optimism-cbeth-base-goerli-addition`, `wormhole-token-list-elon-retarget`).
+- Removal/retarget/conflict review: 3 (`uniswap-unichain-lsk-removal`, `uniswap-excluded-token-conflict`, `megaeth-canonical-case-normalization`). ELON also exercises retarget semantics but counts once under addition/migration.
+- Negative controls: 2 (`wormhole-prime-layout-move`, `wormhole-layerzero-usdc-price-only`).
+- Semantic value beyond text/schema diff: 4 (ELON coordinated migration, runtime conflict suppression, address-case classification, PRIME source-layout no-op).
+
+## Excluded Interpretation
+
+No migration label comes from symbol equality or commit timing. ELON migration relies on PR rationale and coordinated old/new endpoint edits. PRIME is no-op, not migration. LayerZero USDC is price-only, not mapping change. MegaETH proves classifier behavior, not canonical bridge truth.
