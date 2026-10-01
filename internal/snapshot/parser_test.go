@@ -117,3 +117,38 @@ func TestParse_rejects_more_than_100000_mappings(t *testing.T) {
 		t.Fatalf("error = %v, want ErrMappingLimit", err)
 	}
 }
+
+func TestParse_preserves_unknown_and_known_zero_decimals(t *testing.T) {
+	// Given
+	raw := `{"version":1,"mappings":[{"registry":"r","route":"x","origin":{"chain":"a","kind":"opaque","address":"a"},"destination":{"chain":"b","kind":"opaque","address":"b","decimals":0}}]}`
+
+	// When
+	got, err := snapshot.Parse([]byte(raw))
+
+	// Then
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if got.Mappings[0].Origin.Decimals != nil {
+		t.Fatalf("origin decimals = %v, want unknown", got.Mappings[0].Origin.Decimals)
+	}
+	if got.Mappings[0].Destination.Decimals == nil || *got.Mappings[0].Destination.Decimals != 0 {
+		t.Fatalf("destination decimals = %v, want known zero", got.Mappings[0].Destination.Decimals)
+	}
+}
+
+func TestParse_treats_null_decimals_as_unknown(t *testing.T) {
+	// Given
+	raw := `{"version":1,"mappings":[{"registry":"r","route":"x","origin":{"chain":"a","kind":"opaque","address":"a","decimals":null},"destination":{"chain":"b","kind":"opaque","address":"b"}}]}`
+
+	// When
+	got, err := snapshot.Parse([]byte(raw))
+
+	// Then
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if got.Mappings[0].Origin.Decimals != nil {
+		t.Fatalf("origin decimals = %v, want unknown", got.Mappings[0].Origin.Decimals)
+	}
+}

@@ -20,7 +20,7 @@ type Endpoint struct {
 	Chain    string `json:"chain"`
 	Kind     string `json:"kind"`
 	Address  string `json:"address"`
-	Decimals uint8  `json:"decimals"`
+	Decimals *uint8 `json:"decimals"`
 }
 
 func (m Mapping) IsActive() bool {
