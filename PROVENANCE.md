@@ -2,6 +2,8 @@
 
 Evidence captured 2026-09-30 through unauthenticated GitHub API calls and temporary exact-SHA Git fetches. Manifest stores normalized facts only, not copied upstream files. “Mapping” means repository-declared relationship or identity, never canonical asset truth.
 
+`corpus/replay.json` is authored data derived only from facts below. It copies no upstream source. Seven cases replay natively; Monad also replays through exact `uniswap-local-map` source shape using one of five recorded mappings. Unknown decimals remain omitted rather than becoming invented zeros. `uniswap-excluded-token-conflict` stays inventory-only because manifest records counts and chain IDs without endpoint mappings. No collision fixture is fabricated.
+
 | Case | Immutable comparison | Source and rationale | License evidence |
 |---|---|---|---|
 | `uniswap-monad-additions` | `115ffe99793f1682d2759bd152bfb9996231b9bd..3b9e97f0644126e7ea1b22a6eecaa22214a81015` | [`src/local_mappings/monad.json`](https://github.com/Uniswap/token-list-bridge-utils/blob/3b9e97f0644126e7ea1b22a6eecaa22214a81015/src/local_mappings/monad.json), [PR #147](https://github.com/Uniswap/token-list-bridge-utils/pull/147) | `LICENSE` contains GPL-3.0; `package.json` says `GPL-3.0-or-later`. |
