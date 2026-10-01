@@ -18,7 +18,7 @@ func TestRepository_enforces_LF_for_release_text(t *testing.T) {
 	}
 
 	// When / Then
-	for _, pattern := range []string{"*.go", "*.json", "*.yml", "*.yaml", "*.md", "LICENSE"} {
+	for _, pattern := range []string{"*.go", "*.json", "*.yml", "*.yaml", "*.md", "LICENSE", ".gitattributes", "*.golden"} {
 		if !lines[pattern+" text eol=lf"] {
 			t.Errorf("missing LF policy for %s", pattern)
 		}
