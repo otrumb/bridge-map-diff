@@ -1,0 +1,72 @@
+name: release
+
+on:
+  push:
+    tags: ['v0.1.0']
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5
+        with:
+          go-version: '1.23.6'
+          cache: true
+      - name: Validate exact commit
+        shell: bash
+        env:
+          CGO_ENABLED: '0'
+        run: |
+          test "$GITHUB_REF_NAME" = "v0.1.0"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          go test -shuffle=on -count=1 ./...
+          go vet ./...
+          go build -trimpath -o "${RUNNER_TEMP}/bridge-map-diff" ./cmd/bridge-map-diff
+
+  publish:
+    needs: validate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5
+        with:
+          go-version: '1.23.6'
+          cache: true
+      - name: Build repeatable archives
+        shell: bash
+        env:
+          CGO_ENABLED: '0'
+          SOURCE_DATE_EPOCH: '0'
+        run: |
+          set -euo pipefail
+          mkdir -p dist/linux dist/windows
+          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags='-s -w -buildid=' -o dist/linux/bridge-map-diff ./cmd/bridge-map-diff
+          GOOS=windows GOARCH=amd64 go build -trimpath -ldflags='-s -w -buildid=' -o dist/windows/bridge-map-diff.exe ./cmd/bridge-map-diff
+          cp LICENSE dist/linux/LICENSE
+          cp LICENSE dist/windows/LICENSE
+          touch -d @0 dist/linux/*
+          touch -d '1980-01-01 00:00:00 UTC' dist/windows/*
+          tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -C dist/linux -cf - LICENSE bridge-map-diff | gzip -n > dist/bridge-map-diff_v0.1.0_linux_amd64.tar.gz
+          (cd dist/windows && zip -X ../bridge-map-diff_v0.1.0_windows_amd64.zip LICENSE bridge-map-diff.exe)
+          (cd dist && sha256sum bridge-map-diff_v0.1.0_linux_amd64.tar.gz bridge-map-diff_v0.1.0_windows_amd64.zip > SHA256SUMS)
+          tar -tzf dist/bridge-map-diff_v0.1.0_linux_amd64.tar.gz | grep -Fx LICENSE
+          unzip -Z1 dist/bridge-map-diff_v0.1.0_windows_amd64.zip | grep -Fx LICENSE
+      - name: Publish new release (fails if existing)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/bridge-map-diff_v0.1.0_linux_amd64.tar.gz dist/bridge-map-diff_v0.1.0_windows_amd64.zip dist/SHA256SUMS --generate-notes --verify-tag
