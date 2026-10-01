@@ -1,0 +1,1 @@
+{"version":1,"mappings":[{"registry":"example","route":"canonical","origin":{"chain":"ethereum","kind":"evm","address":"0x0000000000000000000000000000000000000000","decimals":18},"destination":{"chain":"base","kind":"evm","address":"0x1111111111111111111111111111111111111111","decimals":18},"symbol":"TOK"}]}
