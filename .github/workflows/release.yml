@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   validate:
     strategy:
@@ -69,4 +73,9 @@ jobs:
       - name: Publish new release (fails if existing)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/bridge-map-diff_v0.1.0_linux_amd64.tar.gz dist/bridge-map-diff_v0.1.0_windows_amd64.zip dist/SHA256SUMS --generate-notes --verify-tag
+        run: |
+          set -euo pipefail
+          remote_target="$(git ls-remote origin "refs/tags/${GITHUB_REF_NAME}^{}" | awk 'NR == 1 { print $1 }')"
+          test -n "$remote_target"
+          test "$remote_target" = "$GITHUB_SHA"
+          gh release create "$GITHUB_REF_NAME" dist/bridge-map-diff_v0.1.0_linux_amd64.tar.gz dist/bridge-map-diff_v0.1.0_windows_amd64.zip dist/SHA256SUMS --generate-notes --verify-tag
