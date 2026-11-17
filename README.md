@@ -2,14 +2,54 @@
 
 Offline semantic diff CLI for native bridge-map snapshots. Tool reports factual mapping changes and review conditions; it never asserts migration safety, authorization, authenticity, or canonical-asset status.
 
-## Usage
+## Install and try locally
+
+Requires Go 1.23+ to build from source. Prebuilt v0.1.0 archives target Windows
+amd64 and Linux amd64; no Go installation is needed to run those binaries.
+
+For a packaged install, download the matching archive and `SHA256SUMS` from
+[release v0.1.0](https://github.com/otrumb/bridge-map-diff/releases/tag/v0.1.0),
+verify the archive hash against `SHA256SUMS`, then extract it and put the binary
+on your `PATH`. See [Release](#release) for archive contents and release gates.
+
+Or build from a source checkout. Run these PowerShell commands from the repository
+root (the tracked `examples/` files are synthetic and need no network access):
+
+```powershell
+$env:CGO_ENABLED = "0"
+go build -trimpath ./cmd/bridge-map-diff
+./bridge-map-diff.exe --schema native --format text examples/before.json examples/after.json
+if ($LASTEXITCODE -ne 1) { throw "expected informational-change exit code 1" }
+./bridge-map-diff.exe --schema native --format json examples/before.json examples/review.json
+if ($LASTEXITCODE -ne 2) { throw "expected review-finding exit code 2" }
+./bridge-map-diff.exe --schema native examples/before.json examples/before.json
+if ($LASTEXITCODE -ne 0) { throw "expected no-findings exit code 0" }
+```
+
+On a POSIX shell, build with `CGO_ENABLED=0 go build -trimpath ./cmd/bridge-map-diff`
+and invoke `./bridge-map-diff` instead of `./bridge-map-diff.exe`.
+
+The first comparison reports one informational `addition`. The second reports
+an `addition` plus a `zero_address` review finding. The last reports no findings.
+Exit `1` or `2` means the comparison ran successfully and found changes or review
+conditions; neither is a claim that a mapping is safe or unsafe. In scripts,
+handle these expected nonzero statuses before treating a command as failed.
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | No findings |
+| `1` | Informational changes |
+| `2` | Review findings |
+| `3` | Usage, input, or output error |
+
+## Input and command reference
 
 ```text
 bridge-map-diff --schema native [--format json|text] BEFORE AFTER
 bridge-map-diff --schema uniswap-local-map --destination-chain CHAIN [--format json|text] BEFORE AFTER
 ```
 
-Exit codes: `0` no findings, `1` informational changes, `2` review findings, `3` usage/input/output error. Input paths must be local files. Output is stdout only.
+Input paths must be local files. Output is stdout only.
 
 Native snapshot shape:
 
